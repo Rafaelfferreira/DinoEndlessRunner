@@ -4,8 +4,6 @@
 #include <windows.h> //incluimos essa biblioteca para usarmos a função sleep, no UNIX essa função se encontra na biblioteca <unistd.h>
 #include "gamelib.h"
 #define DINOPOSX 12 //definida aqui pois a posicao do dinossauro no eixo X é sempre a mesma
-
-
 int main()
 {
     int gameOver = 0, pausado = 0;
@@ -13,15 +11,13 @@ int main()
     int velJogo = nivel * 250; //velocidade que o jogo vai rodar, deve ser sempre igual a (250 * o nivel) e será colocada dentro da função sleep
     int posX = 50,posY = 10; //variaveis de teste, as posicoes devem ficar dentro das estruturas
     int dinoPosY = 14, dinoCrouch = 0; //variaveis de posicao do dinossauro e variavel para determinar se o mesmo esta abaixado
-    int pronto = 1, abaixado = 0; //variaveis para controlar se o dinossauro podera pular/se abaixar e se ele esta abaixado;
+    int pronto = 1, abaixado = 1; //variaveis para controlar se o dinossauro podera pular/se abaixar e se ele esta abaixado;
     char key; //tecla pressionada
+    //variaveis para verificar se existem inimigos (pra saber se os mesmos devem ser carregados)
+    int existeTP = 0, existeTG = 0, existeAP = 0, existeAG = 0; //T = terraqueo, A = aereo, P=pequeno, G=grande
 
-    imprimeCenario(&dinoPosY,&vidas,&pontos,&nivel); //modificar a função para receber se o dinossauro está abaixado ou não
-
-    while(gameOver == 0 && pausado == 0)
-    {
-        movimento(&key, &dinoPosY, &pronto, &velJogo, &abaixado);
-    }
+    imprimeCenario(&dinoPosY,&vidas,&pontos,&nivel); //nao precisa verificar se esta abaixado pq sempre que carregar o cenario o jogador nao estara pressionando a tecla de se abaixar
+    rodaJogo(&dinoPosY, &key, &pronto, &velJogo, &abaixado, &vidas, &pontos, &nivel, &gameOver, &pausado, &existeTP, &existeTG, &existeAP, &existeAG);
 
     //encerramento do programa
     gotoxy(1,21);

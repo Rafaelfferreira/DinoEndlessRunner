@@ -2,9 +2,65 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <windows.h>
+#include <time.h>
 #include "gamelib.h"
 #define DINOPOSX 12
 
+void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *existeTP, int *existeTG, int *existeAP, int *existeAG)
+{
+    srand(time(NULL));
+    while(*gameOver == 0 && *pausado == 0)
+    {
+        interacao(key, dinoPosY, pronto, velJogo, abaixado);
+        int iniPosX = 90, iniPosY, inimigo;
+
+        //5 flags para controlar os inimigos: "inimigo" diz se tem um inimigo na tela e as outras sao flags especificas
+        if(*existeAG == 1 || *existeAP == 1 || *existeTG == 1 || existeTP == 1) //movimenta o inimigo
+        {
+            if(*existeTG == 1)
+            {
+                iniPosY = 14;
+                movimentaTG(&iniPosX, iniPosY, &existeTG, &inimigo);
+            }
+            else if(*existeAG == 1)
+            {
+
+            }
+            else if(*existeAP == 1)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
+        if(*existeAG == 0 && *existeAP == 0 && *existeTG == 0 && *existeTP == 0) //cria um inimigo aleatorio
+        {
+            //inimigo = rand() % (4 + 1 - 1) + 1;
+            inimigo = 1;
+
+            if(inimigo == 1)
+            {
+                *existeTG = 1;
+            }
+            else if(inimigo == 2)
+            {
+                *existeAG == 1;
+            }
+            else if(inimigo == 3)
+            {
+                *existeAP == 1;
+            }
+            else
+            {
+                *existeTP == 1;
+            }
+        }
+    }
+
+}
 //Imprime na tela o cenário, a interface, e o dinnossauro em sua posição atual
 //Essa função deve ser chamada quando o jogo for iniciado(tanto do começo quanto de um save) e quando o jogo sair do pause
 ////A função ainda deve ser alterada para ler se o dinossauro esta abaixado na hora de começar para imprimilo corretamente
@@ -23,20 +79,20 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
     gotoxy(1,20);
     printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-    //Imprime o dinossauro
-    gotoxy(DINOPOSX,*dinoPosY);
-    printf("  TT");
-    gotoxy(DINOPOSX,*dinoPosY+1);
-    printf("TTT");
-    gotoxy(DINOPOSX,*dinoPosY+2);
-    printf("TTT");
-    gotoxy(DINOPOSX,*dinoPosY+3);
-    printf("TTT");
+        //Imprime o dinossauro
+        gotoxy(DINOPOSX,*dinoPosY);
+        printf("  TT");
+        gotoxy(DINOPOSX,*dinoPosY+1);
+        printf("TTT");
+        gotoxy(DINOPOSX,*dinoPosY+2);
+        printf("TTT");
+        gotoxy(DINOPOSX,*dinoPosY+3);
+        printf("TTT");
 }
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void movimento(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
+void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
 {
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -136,4 +192,16 @@ void levantando(int *dinoPosY, int *abaixado)
     gotoxy(DINOPOSX,*dinoPosY+3);
     printf("TTT");
     *abaixado = 0;
+}
+
+void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
+{
+    gotoxy(*iniPosx, iniPosY);
+    printf("YY   YY ");
+    gotoxy(*iniPosx, iniPosY+1);
+    printf("YYYYYYY ");
+    gotoxy(*iniPosx, iniPosY+2);
+    printf("  YYY ");
+    gotoxy(*iniPosx, iniPosY+3);
+    printf("  YYY ");
 }
