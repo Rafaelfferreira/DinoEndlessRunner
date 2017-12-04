@@ -8,8 +8,7 @@ int main()
 {
     int gameOver = 0, pausado = 0;
     int vidas = 3, pontos = 0, nivel = 1;
-    int velJogo = nivel * 250; //velocidade que o jogo vai rodar, deve ser sempre igual a (250 * o nivel) e será colocada dentro da função sleep
-    int posX = 50,posY = 10; //variaveis de teste, as posicoes devem ficar dentro das estruturas
+    int velJogo = nivel * 250; //velocidade que o jogo vai rodar, deve ser sempre igual a ([VALOR PADRAO] - (250 * o nivel)) e será colocada dentro da função sleep
     int dinoPosY = 14, dinoCrouch = 0; //variaveis de posicao do dinossauro e variavel para determinar se o mesmo esta abaixado
     int pronto = 1, abaixado = 1; //variaveis para controlar se o dinossauro podera pular/se abaixar e se ele esta abaixado;
     char key; //tecla pressionada

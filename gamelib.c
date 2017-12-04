@@ -6,13 +6,19 @@
 #include "gamelib.h"
 #define DINOPOSX 12
 
+//funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
 void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *existeTP, int *existeTG, int *existeAP, int *existeAG)
 {
-    srand(time(NULL));
+    srand(time(NULL)); //inicializando a seed do rand
+    int FLPulando, tempoPulo; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
+    int iniPosX = 90, iniPosY, inimigo; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(key, dinoPosY, pronto, velJogo, abaixado);
-        int iniPosX = 90, iniPosY, inimigo;
+        interacao(key, dinoPosY, pronto, velJogo, abaixado, &FLPulando, &tempoPulo);
+
+        //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
+        if(FLPulando == 1)
+            pulando(dinoPosY, pronto, &tempoPulo, &FLPulando);
 
         //5 flags para controlar os inimigos: "inimigo" diz se tem um inimigo na tela e as outras sao flags especificas
         if(*existeAG == 1 || *existeAP == 1 || *existeTG == 1 || existeTP == 1) //movimenta o inimigo
@@ -58,6 +64,8 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
                 *existeTP == 1;
             }
         }
+
+        Sleep(300 - *velJogo);//controla a velocidade do jogo
     }
 
 }
@@ -92,18 +100,16 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
-{
-    int FLPulando, tempoPulo; //flag se o dinossauro esta pulando
+void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo)
+{ //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
         *k = getch();
         if(*k == ' ' && *abaixado == 0)
         {
             *pronto = 0;
-            tempoPulo = 12;
-            FLPulando = 1;
-            pulando(dinoPosY, velJogo, pronto, &tempoPulo, &FLPulando);
+            *tempoPulo = 20;
+            *FLPulando = 1;
         }
         else if(*k == 'c' || *k == 80) //80 é o numero que representa a seta para baixo
         {
@@ -116,18 +122,13 @@ void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
     {
         levantando(dinoPosY, abaixado);
     }
-    if(FLPulando == 1)
-        pulando(dinoPosY, velJogo, pronto, &tempoPulo, &FLPulando);
 }
 
 //Faz o dinossauro pular e, ao fim do pulo, limpa o buffer de qualquer outra tecla que o jogador tenha pressionado durante o pulo
-void pulando(int *dinoPosY, int *velJogo, int *pronto, int *tempoPulo, int *FLPulando)
+void pulando(int *dinoPosY, int *pronto, int *tempoPulo, int *FLPulando)
 {
-        gotoxy(20,10);
-        printf("entrou %d, %d", *tempoPulo, *FLPulando);
-        Sleep(500);
-        //dinossauro descendo
-        if(*tempoPulo > 8)
+        //dinossauro subindo
+        if(*tempoPulo > 16)
         {
             *dinoPosY = *dinoPosY -1;
             gotoxy(DINOPOSX,*dinoPosY);
@@ -142,10 +143,11 @@ void pulando(int *dinoPosY, int *velJogo, int *pronto, int *tempoPulo, int *FLPu
             printf("   ");
             *tempoPulo = *tempoPulo-1;
         }
-        else if(*tempoPulo > 4 && *tempoPulo < 9)
+        //tempo que o dinossauro fica parado no ar
+        else if(*tempoPulo > 4 && *tempoPulo < 17)
             *tempoPulo = *tempoPulo-1;
 
-        //dinossauro subindo
+        //dinossauro descendo
         else if(*tempoPulo < 5 && *tempoPulo > 0)
         {
             *dinoPosY = *dinoPosY + 1;
@@ -160,17 +162,17 @@ void pulando(int *dinoPosY, int *velJogo, int *pronto, int *tempoPulo, int *FLPu
             gotoxy(DINOPOSX,*dinoPosY+3);
             printf("TTT");
             *tempoPulo = *tempoPulo-1;
+        }
+        else if(*tempoPulo == 0)
+        {
+            *FLPulando = 0; //faz com que o dinossauro pare de pular
 
             //Limpa o buffer do teclado de teclas que foram pressionadas durante o pulo
             while(kbhit())
             getch();
             *pronto = 1;
         }
-        else if(*tempoPulo == 0)
-            *FLPulando = 0;
 
-
-        //Sleep(*velJogo/2);
 }
 
 //As duas funçoes abaixo apagam o dinossauro atual, imprimeme ele ou abaixado ou levantado e mudam a flag "abaixado"
@@ -205,12 +207,27 @@ void levantando(int *dinoPosY, int *abaixado)
 
 void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
 {
-    gotoxy(*iniPosx, iniPosY);
-    printf("YY   YY ");
-    gotoxy(*iniPosx, iniPosY+1);
-    printf("YYYYYYY ");
-    gotoxy(*iniPosx, iniPosY+2);
-    printf("  YYY ");
-    gotoxy(*iniPosx, iniPosY+3);
-    printf("  YYY ");
+    if(*iniPosx > 0)
+    {
+        gotoxy(*iniPosx, iniPosY);
+        printf("YY   YY ");
+        gotoxy(*iniPosx, iniPosY+1);
+        printf("YYYYYYY ");
+        gotoxy(*iniPosx, iniPosY+2);
+        printf("  YYY ");
+        gotoxy(*iniPosx, iniPosY+3);
+        printf("  YYY ");
+        *iniPosx = *iniPosx - 1;
+    }
+    else
+    {
+        gotoxy(*iniPosx+1, iniPosY);
+        printf("       ");
+        gotoxy(*iniPosx+1, iniPosY+1);
+        printf("       ");
+        gotoxy(*iniPosx+1, iniPosY+2);
+        printf("     ");
+        gotoxy(*iniPosx+1, iniPosY+3);
+        printf("     ");
+    }
 }
