@@ -94,13 +94,16 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
 void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
 {
+    int FLPulando, tempoPulo; //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
         *k = getch();
         if(*k == ' ' && *abaixado == 0)
         {
             *pronto = 0;
-            pulando(dinoPosY, velJogo, pronto);
+            tempoPulo = 12;
+            FLPulando = 1;
+            pulando(dinoPosY, velJogo, pronto, &tempoPulo, &FLPulando);
         }
         else if(*k == 'c' || *k == 80) //80 é o numero que representa a seta para baixo
         {
@@ -113,39 +116,18 @@ void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado)
     {
         levantando(dinoPosY, abaixado);
     }
+    if(FLPulando == 1)
+        pulando(dinoPosY, velJogo, pronto, &tempoPulo, &FLPulando);
 }
 
 //Faz o dinossauro pular e, ao fim do pulo, limpa o buffer de qualquer outra tecla que o jogador tenha pressionado durante o pulo
-void pulando(int *dinoPosY, int *velJogo, int *pronto)
+void pulando(int *dinoPosY, int *velJogo, int *pronto, int *tempoPulo, int *FLPulando)
 {
-    int i, tempoPulo = 12;
-
-    //Ajustar quanto tempo ele fica no ar
-    for(i = 0; i < tempoPulo; i++) //7 é quantos ciclos demora um pulo, 1 para subir, 5 no ar e 1 para descer
-    {
+        gotoxy(20,10);
+        printf("entrou %d, %d", *tempoPulo, *FLPulando);
+        Sleep(500);
         //dinossauro descendo
-        if(i > (tempoPulo - 5))
-        {
-            *dinoPosY = *dinoPosY + 1;
-            gotoxy(DINOPOSX,*dinoPosY-1);
-            printf("    ");
-            gotoxy(DINOPOSX,*dinoPosY);
-            printf("  TT");
-            gotoxy(DINOPOSX,*dinoPosY+1);
-            printf("TTT");
-            gotoxy(DINOPOSX,*dinoPosY+2);
-            printf("TTT");
-            gotoxy(DINOPOSX,*dinoPosY+3);
-            printf("TTT");
-
-            //Limpa o buffer do teclado de teclas que foram pressionadas durante o pulo
-            while(kbhit())
-            getch();
-            *pronto = 1;
-        }
-
-        //dinossauro subindo
-        else if(i < 4)
+        if(*tempoPulo > 8)
         {
             *dinoPosY = *dinoPosY -1;
             gotoxy(DINOPOSX,*dinoPosY);
@@ -158,10 +140,37 @@ void pulando(int *dinoPosY, int *velJogo, int *pronto)
             printf("TTT");
             gotoxy(DINOPOSX,*dinoPosY+4);
             printf("   ");
+            *tempoPulo = *tempoPulo-1;
         }
+        else if(*tempoPulo > 4 && *tempoPulo < 9)
+            *tempoPulo = *tempoPulo-1;
 
-        Sleep(*velJogo/2);
-    }
+        //dinossauro subindo
+        else if(*tempoPulo < 5 && *tempoPulo > 0)
+        {
+            *dinoPosY = *dinoPosY + 1;
+            gotoxy(DINOPOSX,*dinoPosY-1);
+            printf("    ");
+            gotoxy(DINOPOSX,*dinoPosY);
+            printf("  TT");
+            gotoxy(DINOPOSX,*dinoPosY+1);
+            printf("TTT");
+            gotoxy(DINOPOSX,*dinoPosY+2);
+            printf("TTT");
+            gotoxy(DINOPOSX,*dinoPosY+3);
+            printf("TTT");
+            *tempoPulo = *tempoPulo-1;
+
+            //Limpa o buffer do teclado de teclas que foram pressionadas durante o pulo
+            while(kbhit())
+            getch();
+            *pronto = 1;
+        }
+        else if(*tempoPulo == 0)
+            *FLPulando = 0;
+
+
+        //Sleep(*velJogo/2);
 }
 
 //As duas funçoes abaixo apagam o dinossauro atual, imprimeme ele ou abaixado ou levantado e mudam a flag "abaixado"
