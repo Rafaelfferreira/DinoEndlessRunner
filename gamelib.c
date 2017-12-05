@@ -21,31 +21,31 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
             pulando(dinoPosY, pronto, &tempoPulo, &FLPulando);
 
         //5 flags para controlar os inimigos: "inimigo" diz se tem um inimigo na tela e as outras sao flags especificas
-        if(*existeAG == 1 || *existeAP == 1 || *existeTG == 1 || existeTP == 1) //movimenta o inimigo
+        if(*existeAG == 1 || *existeAP == 1 || *existeTG == 1 || *existeTP == 1) //movimenta o inimigo
         {
             if(*existeTG == 1)
             {
                 iniPosY = 14;
-                movimentaTG(&iniPosX, iniPosY, &existeTG, &inimigo);
+                movimentaTG(&iniPosX, iniPosY, existeTG, &inimigo);
             }
             else if(*existeAG == 1)
             {
-
+                movimentaAG(&iniPosX, iniPosY, existeAG, &inimigo);
             }
             else if(*existeAP == 1)
             {
-
+                movimentaAP(&iniPosX, iniPosY, existeAP, &inimigo);
             }
             else
             {
-
+                iniPosY = 14;
+                movimentaTP(&iniPosX, iniPosY, existeTP, &inimigo);
             }
         }
 
         if(*existeAG == 0 && *existeAP == 0 && *existeTG == 0 && *existeTP == 0) //cria um inimigo aleatorio
         {
-            //inimigo = rand() % (4 + 1 - 1) + 1;
-            inimigo = 1;
+            inimigo = rand() % (4 + 1 - 1) + 1;
 
             if(inimigo == 1)
             {
@@ -53,15 +53,17 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
             }
             else if(inimigo == 2)
             {
-                *existeAG == 1;
+                iniPosY = rand() % (13 + 1 - 11) + 11;
+                *existeAG = 1;
             }
             else if(inimigo == 3)
             {
-                *existeAP == 1;
+                iniPosY = rand() % (13 + 1 - 11) + 11;
+                *existeAP = 1;
             }
             else
             {
-                *existeTP == 1;
+                *existeTP = 1;
             }
         }
 
@@ -219,7 +221,7 @@ void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
         printf("  YYY ");
         *iniPosx = *iniPosx - 1;
     }
-    else
+    else if (*iniPosx == 0)
     {
         gotoxy(*iniPosx+1, iniPosY);
         printf("       ");
@@ -229,5 +231,82 @@ void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
         printf("     ");
         gotoxy(*iniPosx+1, iniPosY+3);
         printf("     ");
+        *existeTG = 0;
+        *iniPosx = 90;
+    }
+}
+
+void movimentaTP(int *iniPosx, int iniPosY, int *existeTP, int *inimigo)
+{
+    if(*iniPosx > 0)
+    {
+        gotoxy(*iniPosx, iniPosY);
+        printf("### ");
+        gotoxy(*iniPosx, iniPosY+1);
+        printf("### ");
+        gotoxy(*iniPosx, iniPosY+2);
+        printf("### ");
+        gotoxy(*iniPosx, iniPosY+3);
+        printf("### ");
+        *iniPosx = *iniPosx - 1;
+    }
+    else if(*iniPosx == 0)
+    {
+        gotoxy(*iniPosx+1, iniPosY);
+        printf("   ");
+        gotoxy(*iniPosx+1, iniPosY+1);
+        printf("   ");
+        gotoxy(*iniPosx+1, iniPosY+2);
+        printf("   ");
+        gotoxy(*iniPosx+1, iniPosY+3);
+        printf("    ");
+        *existeTP = 0;
+        *iniPosx = 90;
+    }
+}
+
+void movimentaAG(int *iniPosx, int iniPosY, int *existeAG, int *inimigo)
+{
+    if(*iniPosx > 0)
+    {
+        gotoxy(*iniPosx, iniPosY);
+        printf(" %%%%%%%%%%%% ");
+        gotoxy(*iniPosx, iniPosY+1);
+        printf("%%%%%%%% ");
+        gotoxy(*iniPosx, iniPosY+2);
+        printf(" %%%%%%%%%%%% ");
+        *iniPosx = *iniPosx - 1;
+    }
+    else if(*iniPosx == 0)
+    {
+        gotoxy(*iniPosx+1, iniPosY);
+        printf("       ");
+        gotoxy(*iniPosx+1, iniPosY+1);
+        printf("    ");
+        gotoxy(*iniPosx+1, iniPosY+2);
+        printf("       ");
+        *existeAG = 0;
+        *iniPosx = 90;
+    }
+}
+
+void movimentaAP(int *iniPosx, int iniPosY, int *existeAP, int *inimigo)
+{
+    if(*iniPosx > 0)
+    {
+        gotoxy(*iniPosx, iniPosY);
+        printf("%%%%%%%%%%%%%% ");
+        gotoxy(*iniPosx, iniPosY+1);
+        printf("%%%%%%%%%%%%%% ");
+        *iniPosx = *iniPosx - 1;
+    }
+    else if(*iniPosx == 0)
+    {
+        gotoxy(*iniPosx+1, iniPosY);
+        printf("       ");
+        gotoxy(*iniPosx+1, iniPosY+1);
+        printf("       ");
+        *existeAP = 0;
+        *iniPosx = 90;
     }
 }

@@ -8,5 +8,8 @@ void pulando(int *dinoPosY, int *pronto, int *tempoPulo, int *FLPulando);
 void abaixando(int *dinoPosY, int *abaicado);
 void levantando(int *dinoPosY, int *abaixado);
 void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo);
+void movimentaTP(int *iniPosx, int iniPosY, int *existeTP, int *inimigo);
+void movimentaAG(int *iniPosx, int iniPosY, int *existeAG, int *inimigo);
+void movimentaAP(int *iniPosx, int iniPosY, int *existeAP, int *inimigo);
 
 #endif // _GAMELIB_H_
