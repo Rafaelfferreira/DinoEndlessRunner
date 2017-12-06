@@ -13,10 +13,9 @@ int main()
     int pronto = 1, abaixado = 1; //variaveis para controlar se o dinossauro podera pular/se abaixar e se ele esta abaixado;
     char key; //tecla pressionada
     //variaveis para verificar se existem inimigos (pra saber se os mesmos devem ser carregados)
-    int existeTP = 0, existeTG = 0, existeAP = 0, existeAG = 0; //T = terraqueo, A = aereo, P=pequeno, G=grande
 
     imprimeCenario(&dinoPosY,&vidas,&pontos,&nivel); //nao precisa verificar se esta abaixado pq sempre que carregar o cenario o jogador nao estara pressionando a tecla de se abaixar
-    rodaJogo(&dinoPosY, &key, &pronto, &velJogo, &abaixado, &vidas, &pontos, &nivel, &gameOver, &pausado, &existeTP, &existeTG, &existeAP, &existeAG);
+    rodaJogo(&dinoPosY, &key, &pronto, &velJogo, &abaixado, &vidas, &pontos, &nivel, &gameOver, &pausado);
 
     //encerramento do programa
     gotoxy(1,21);

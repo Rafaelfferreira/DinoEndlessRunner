@@ -11,7 +11,8 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
 {
     srand(time(NULL)); //inicializando a seed do rand
     int FLPulando, tempoPulo; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
-    int iniPosX = 90, iniPosY, inimigo; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
+    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
+
     while(*gameOver == 0 && *pausado == 0)
     {
         interacao(key, dinoPosY, pronto, velJogo, abaixado, &FLPulando, &tempoPulo);
@@ -20,50 +21,102 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
         if(FLPulando == 1)
             pulando(dinoPosY, pronto, &tempoPulo, &FLPulando);
 
-        //5 flags para controlar os inimigos: "inimigo" diz se tem um inimigo na tela e as outras sao flags especificas
-        if(*existeAG == 1 || *existeAP == 1 || *existeTG == 1 || *existeTP == 1) //movimenta o inimigo
+        //Se o inimigo 1 estiver na tela atualiza sua posicao
+        if(ini1 != 0)
         {
-            if(*existeTG == 1)
+            if(ini1 == 1)
             {
-                iniPosY = 14;
-                movimentaTG(&iniPosX, iniPosY, existeTG, &inimigo);
+                ini1PosY = 14;
+                movimentaTG(&ini1PosX, ini1PosY, &ini1);
             }
-            else if(*existeAG == 1)
+            else if(ini1 == 2)
             {
-                movimentaAG(&iniPosX, iniPosY, existeAG, &inimigo);
+                movimentaAG(&ini1PosX, ini1PosY, &ini1);
             }
-            else if(*existeAP == 1)
+            else if(ini1 == 3)
             {
-                movimentaAP(&iniPosX, iniPosY, existeAP, &inimigo);
+                movimentaAP(&ini1PosX, ini1PosY, &ini1);
             }
             else
             {
-                iniPosY = 14;
-                movimentaTP(&iniPosX, iniPosY, existeTP, &inimigo);
+                ini1PosY = 14;
+                movimentaTP(&ini1PosX, ini1PosY, &ini1);
             }
         }
 
-        if(*existeAG == 0 && *existeAP == 0 && *existeTG == 0 && *existeTP == 0) //cria um inimigo aleatorio
+        //se o inimigo 2 estiver na tela atualiza sua posição
+        if(ini2 != 0)
         {
-            inimigo = rand() % (4 + 1 - 1) + 1;
-
-            if(inimigo == 1)
+            if(ini2 == 1)
             {
-                *existeTG = 1;
+                ini2PosY = 14;
+                movimentaTG(&ini2PosX, ini2PosY, &ini2);
             }
-            else if(inimigo == 2)
+            else if(ini2 == 2)
             {
-                iniPosY = rand() % (13 + 1 - 11) + 11;
-                *existeAG = 1;
+                movimentaAG(&ini2PosX, ini2PosY, &ini2);
             }
-            else if(inimigo == 3)
+            else if(ini2 == 3)
             {
-                iniPosY = rand() % (13 + 1 - 11) + 11;
-                *existeAP = 1;
+                movimentaAP(&ini2PosX, ini2PosY, &ini2);
             }
             else
             {
-                *existeTP = 1;
+                ini2PosY = 14;
+                movimentaTP(&ini2PosX, ini2PosY, &ini2);
+            }
+        }
+
+        if(ini1 == 0 || ini2 == 0) //cria um inimigo aleatorio caso nao hajam 2 inimigos na tela
+        {
+            if((ini1 != 0 && ini1PosX < 30) || (ini2 != 0 && ini2PosX < 30) || (ini1 == 0 && ini2 == 0))
+            {
+                inimigo = rand() % (4 + 1 - 1) + 1;
+                if(inimigo == 1)
+                {
+                    if(ini1 == 0)
+                        ini1 = 1;
+
+                    else if(ini2 == 0)
+                        ini2 = 1;
+
+                }
+                else if(inimigo == 2)
+                {
+                    if(ini1 == 0)
+                    {
+                        ini1 = 2;
+                        ini1PosY = rand() % (13 + 1 - 11) + 11;
+                    }
+
+                    else if(ini2 == 0)
+                    {
+                        ini2 = 2;
+                        ini2PosY = rand() % (13 + 1 - 11) + 11;
+                    }
+                }
+                else if(inimigo == 3)
+                {
+                    if(ini1 == 0)
+                    {
+                        ini1 = 3;
+                        ini1PosY = rand() % (13 + 1 - 11) + 11;
+                    }
+
+                    else if(ini2 == 0)
+                    {
+                        ini2 = 3;
+                        ini2PosY = rand() % (13 + 1 - 11) + 11;
+                    }
+                }
+                else
+                {
+                    if(ini1 == 0)
+                        ini1 = 4;
+
+                    else if(ini2 == 0)
+                        ini2 = 4;
+                }
             }
         }
 
@@ -207,7 +260,7 @@ void levantando(int *dinoPosY, int *abaixado)
     *abaixado = 0;
 }
 
-void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
+void movimentaTG(int *iniPosx, int iniPosY, int *nIni)
 {
     if(*iniPosx > 0)
     {
@@ -231,12 +284,12 @@ void movimentaTG(int *iniPosx, int iniPosY, int *existeTG, int *inimigo)
         printf("     ");
         gotoxy(*iniPosx+1, iniPosY+3);
         printf("     ");
-        *existeTG = 0;
+        *nIni = 0;
         *iniPosx = 90;
     }
 }
 
-void movimentaTP(int *iniPosx, int iniPosY, int *existeTP, int *inimigo)
+void movimentaTP(int *iniPosx, int iniPosY, int *nIni)
 {
     if(*iniPosx > 0)
     {
@@ -260,12 +313,12 @@ void movimentaTP(int *iniPosx, int iniPosY, int *existeTP, int *inimigo)
         printf("   ");
         gotoxy(*iniPosx+1, iniPosY+3);
         printf("    ");
-        *existeTP = 0;
+        *nIni = 0;
         *iniPosx = 90;
     }
 }
 
-void movimentaAG(int *iniPosx, int iniPosY, int *existeAG, int *inimigo)
+void movimentaAG(int *iniPosx, int iniPosY, int *nIni)
 {
     if(*iniPosx > 0)
     {
@@ -285,12 +338,12 @@ void movimentaAG(int *iniPosx, int iniPosY, int *existeAG, int *inimigo)
         printf("    ");
         gotoxy(*iniPosx+1, iniPosY+2);
         printf("       ");
-        *existeAG = 0;
+        *nIni = 0;
         *iniPosx = 90;
     }
 }
 
-void movimentaAP(int *iniPosx, int iniPosY, int *existeAP, int *inimigo)
+void movimentaAP(int *iniPosx, int iniPosY, int *nIni)
 {
     if(*iniPosx > 0)
     {
@@ -306,7 +359,7 @@ void movimentaAP(int *iniPosx, int iniPosY, int *existeAP, int *inimigo)
         printf("       ");
         gotoxy(*iniPosx+1, iniPosY+1);
         printf("       ");
-        *existeAP = 0;
+        *nIni = 0;
         *iniPosx = 90;
     }
 }
