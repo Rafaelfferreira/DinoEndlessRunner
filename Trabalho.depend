@@ -1,14 +1,14 @@
 # depslib dependency file v1.0
-1512444562 source:c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\main.c
+1512594251 source:c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\main.c
 	<stdio.h>
 	<stdlib.h>
 	<conio.h>
 	<windows.h>
 	"gamelib.h"
 
-1512529609 c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\gamelib.h
+1512676469 c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\gamelib.h
 
-1512529592 source:c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\gamelib.c
+1512699022 source:c:\users\admin\documents\ufrgs\semestre 2017-2\algoritmos e programação\trabalho\gamelib.c
 	<stdio.h>
 	<stdlib.h>
 	<conio.h>

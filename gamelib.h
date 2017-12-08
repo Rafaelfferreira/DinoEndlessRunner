@@ -11,5 +11,6 @@ void movimentaTG(int *iniPosx, int iniPosY, int *nIni);
 void movimentaTP(int *iniPosx, int iniPosY, int *nIni);
 void movimentaAG(int *iniPosx, int iniPosY, int *nIni);
 void movimentaAP(int *iniPosx, int iniPosY, int *nIni);
+int testaDano(int dinoPosY, int nIni, int iniPosY, int iniPosX, int abaixado, int tempoPulo);
 
 #endif // _GAMELIB_H_

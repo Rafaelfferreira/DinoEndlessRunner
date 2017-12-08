@@ -7,11 +7,11 @@
 #define DINOPOSX 12
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *existeTP, int *existeTG, int *existeAP, int *existeAG)
+void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
 {
     srand(time(NULL)); //inicializando a seed do rand
-    int FLPulando, tempoPulo; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
-    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
+    int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
+    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)0
 
     while(*gameOver == 0 && *pausado == 0)
     {
@@ -27,19 +27,23 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
             if(ini1 == 1)
             {
                 ini1PosY = 14;
+                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaTG(&ini1PosX, ini1PosY, &ini1);
             }
             else if(ini1 == 2)
             {
                 movimentaAG(&ini1PosX, ini1PosY, &ini1);
+                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
             }
             else if(ini1 == 3)
             {
+                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaAP(&ini1PosX, ini1PosY, &ini1);
             }
             else
             {
                 ini1PosY = 14;
+                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaTP(&ini1PosX, ini1PosY, &ini1);
             }
         }
@@ -50,19 +54,23 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
             if(ini2 == 1)
             {
                 ini2PosY = 14;
+                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaTG(&ini2PosX, ini2PosY, &ini2);
             }
             else if(ini2 == 2)
             {
                 movimentaAG(&ini2PosX, ini2PosY, &ini2);
+                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
             }
             else if(ini2 == 3)
             {
+                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaAP(&ini2PosX, ini2PosY, &ini2);
             }
             else
             {
                 ini2PosY = 14;
+                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaTP(&ini2PosX, ini2PosY, &ini2);
             }
         }
@@ -100,13 +108,13 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
                     if(ini1 == 0)
                     {
                         ini1 = 3;
-                        ini1PosY = rand() % (13 + 1 - 11) + 11;
+                        ini1PosY = rand() % (13 + 1 - 12) + 12;
                     }
 
                     else if(ini2 == 0)
                     {
                         ini2 = 3;
-                        ini2PosY = rand() % (13 + 1 - 11) + 11;
+                        ini2PosY = rand() % (13 + 1 - 12) + 12;
                     }
                 }
                 else
@@ -362,4 +370,145 @@ void movimentaAP(int *iniPosx, int iniPosY, int *nIni)
         *nIni = 0;
         *iniPosx = 90;
     }
+}
+
+int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int tempoPulo)
+{
+    int bateu = 0;
+    if(abaixado == 0)
+    {
+        //TUDO UM TESTE
+        //AVALIA QUE TIPO DE INIMIGO É E PROCESSA OS DADOS DE FORMA DIFERENTE
+        switch(nIni)
+        {
+            case 1:
+                //O if e o else a seguir testam se houve colisão quando o dinossauro esta na frente dos cactus
+                if((DINOPOSX+3) == (iniPosX-1)) //testa se o dinossauro vai bater a cabeça nos "braços" dos cactus
+                {
+                    if(dinoPosY == iniPosY)
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+                else if((DINOPOSX+2) == (iniPosX-1))
+                {
+                    if((iniPosY > dinoPosY && iniPosY < dinoPosY+4) || (iniPosY+1 > dinoPosY && iniPosY+1 < dinoPosY+4)) //testa se a frente do corpo do dino bate nos braços dos cactus
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+                //esse if testa se o dinossauro cairá em cima dos cactus
+                if(tempoPulo < 5 && tempoPulo > 0)
+                {
+                    if((DINOPOSX >= iniPosX && DINOPOSX < iniPosX+7) || (DINOPOSX+1 >= iniPosX && DINOPOSX+1 < iniPosX+7) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+7))
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+
+            break;
+
+            case 2:
+                if((dinoPosY == iniPosY+2) || (dinoPosY == iniPosY+1) || (dinoPosY == iniPosY)) //testa se a cabeça esta na mesma altura do aerolito
+                {
+                    if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+7) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+7)) //testa se a cabeça esta na mesma posicao que o aerolito
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+                else if(dinoPosY+1 == iniPosY || dinoPosY+1 == iniPosY+1 || iniPosX+1 == iniPosY+2 || dinoPosY+2 == iniPosY || dinoPosY+2 == iniPosY+1 || iniPosX+2 == iniPosY+2 || dinoPosY+3 == iniPosY || dinoPosY+3 == iniPosY+1 || iniPosX+3 == iniPosY+2)
+                {
+                    //if testa se a frente e a traseira do corpo do dinossauro estao encostando na nuvem
+                    if((DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6))
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+            break;
+
+            case 3:
+                if((dinoPosY == iniPosY+1) || (dinoPosY == iniPosY)) //testa se a cabeça esta na mesma altura do aerolito
+                {
+                    if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+6) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6)) //testa se a cabeça esta na mesma posicao que o aerolito
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+                //else abaixo testa se o corpo do dinossauro esta na mesma altura do aerolito
+                else if((dinoPosY+1 == iniPosY+1) || (dinoPosY+1 == iniPosY) || (dinoPosY+2 == iniPosY+1) || (dinoPosY+2 == iniPosY) || (dinoPosY+3 == iniPosY+1) || (dinoPosY+3 == iniPosY))
+                {
+                    //if testa se a frente e a traseira do corpo do dinossauro estao encostando na nuvem
+                    if((DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6) || (DINOPOSX+1 >= iniPosX && DINOPOSX < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6))
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+            break;
+
+            case 4:
+                if((DINOPOSX+3) == (iniPosX)) //testa se o dinossauro vai bater a cabeça nos "braços" dos cactus
+                {
+                    if(dinoPosY == iniPosY)
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+                else if((DINOPOSX+2) == (iniPosX))
+                {
+                    //testa se o corpo do dinossauro bate contra o cactus
+                    if((iniPosY > dinoPosY && iniPosY < dinoPosY+4) || (iniPosY+1 > dinoPosY && iniPosY+1 < dinoPosY+4) || (iniPosY+2 > dinoPosY && iniPosY+2 < dinoPosY+4) || (iniPosY+3 > dinoPosY && iniPosY+3 < dinoPosY+4)) //testa se a frente do corpo do dino bate nos braços dos cactus
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+
+                //esse if testa se o dinossauro cairá em cima dos cactus
+                if(tempoPulo < 5 && tempoPulo > 0)
+                {
+                    if((DINOPOSX >= iniPosX && DINOPOSX < iniPosX+2) || (DINOPOSX+1 >= iniPosX && DINOPOSX+1 < iniPosX+2) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+2))
+                    {
+                        Sleep(500);
+                        bateu = 1;
+                    }
+                }
+
+            break;
+
+
+        }
+    }
+    else if (abaixado == 1)
+    {
+        switch(nIni)
+        {
+            case 1:
+                if(DINOPOSX+6 == iniPosX+2) //testa se a cabeca do dinossauro bate no corpo dos cactus
+                {
+                    bateu = 1;
+                    Sleep(500);
+                }
+                break;
+
+            case 4:
+                if(DINOPOSX+4 == iniPosX)
+                {
+                    bateu = 1;
+                    Sleep(500);
+                }
+                break;
+
+        }
+    }
+
+    return bateu;
+
 }
