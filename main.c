@@ -11,11 +11,10 @@ int main()
     int velJogo = nivel * 250; //velocidade que o jogo vai rodar, deve ser sempre igual a ([VALOR PADRAO] - (250 * o nivel)) e será colocada dentro da função sleep
     int dinoPosY = 14, dinoCrouch = 0; //variaveis de posicao do dinossauro e variavel para determinar se o mesmo esta abaixado
     int pronto = 1, abaixado = 1; //variaveis para controlar se o dinossauro podera pular/se abaixar e se ele esta abaixado;
-    char key; //tecla pressionada
     //variaveis para verificar se existem inimigos (pra saber se os mesmos devem ser carregados)
 
     imprimeCenario(&dinoPosY,&vidas,&pontos,&nivel); //nao precisa verificar se esta abaixado pq sempre que carregar o cenario o jogador nao estara pressionando a tecla de se abaixar
-    rodaJogo(&dinoPosY, &key, &pronto, &velJogo, &abaixado, &vidas, &pontos, &nivel, &gameOver, &pausado);
+    rodaJogo(&dinoPosY, &pronto, &velJogo, &abaixado, &vidas, &pontos, &nivel, &gameOver, &pausado);
 
     //encerramento do programa
     gotoxy(1,21);

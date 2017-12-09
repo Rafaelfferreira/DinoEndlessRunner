@@ -7,15 +7,16 @@
 #define DINOPOSX 12
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
+void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
 {
     srand(time(NULL)); //inicializando a seed do rand
+    char key;
     int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
-    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)0
+    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)0
 
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(key, dinoPosY, pronto, velJogo, abaixado, &FLPulando, &tempoPulo);
+        interacao(&key, dinoPosY, pronto, velJogo, abaixado, &FLPulando, &tempoPulo);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -27,23 +28,23 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
             if(ini1 == 1)
             {
                 ini1PosY = 14;
-                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaTG(&ini1PosX, ini1PosY, &ini1);
             }
             else if(ini1 == 2)
             {
                 movimentaAG(&ini1PosX, ini1PosY, &ini1);
-                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
             }
             else if(ini1 == 3)
             {
-                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaAP(&ini1PosX, ini1PosY, &ini1);
             }
             else
             {
                 ini1PosY = 14;
-                testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
                 movimentaTP(&ini1PosX, ini1PosY, &ini1);
             }
         }
@@ -127,6 +128,9 @@ void rodaJogo(int *dinoPosY, int *key, int *pronto, int *velJogo, int *abaixado,
                 }
             }
         }
+
+        if(levouDano == 1)
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano);
 
         Sleep(300 - *velJogo);//controla a velocidade do jogo
     }
@@ -387,7 +391,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if(dinoPosY == iniPosY)
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -395,7 +398,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if((iniPosY > dinoPosY && iniPosY < dinoPosY+4) || (iniPosY+1 > dinoPosY && iniPosY+1 < dinoPosY+4)) //testa se a frente do corpo do dino bate nos braços dos cactus
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -404,7 +406,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if((DINOPOSX >= iniPosX && DINOPOSX < iniPosX+7) || (DINOPOSX+1 >= iniPosX && DINOPOSX+1 < iniPosX+7) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+7))
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -416,7 +417,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+7) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+7)) //testa se a cabeça esta na mesma posicao que o aerolito
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -425,7 +425,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                     //if testa se a frente e a traseira do corpo do dinossauro estao encostando na nuvem
                     if((DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6))
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -436,7 +435,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+6) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6)) //testa se a cabeça esta na mesma posicao que o aerolito
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -446,7 +444,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                     //if testa se a frente e a traseira do corpo do dinossauro estao encostando na nuvem
                     if((DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6) || (DINOPOSX+1 >= iniPosX && DINOPOSX < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6))
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -457,7 +454,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if(dinoPosY == iniPosY)
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -466,7 +462,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                     //testa se o corpo do dinossauro bate contra o cactus
                     if((iniPosY > dinoPosY && iniPosY < dinoPosY+4) || (iniPosY+1 > dinoPosY && iniPosY+1 < dinoPosY+4) || (iniPosY+2 > dinoPosY && iniPosY+2 < dinoPosY+4) || (iniPosY+3 > dinoPosY && iniPosY+3 < dinoPosY+4)) //testa se a frente do corpo do dino bate nos braços dos cactus
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -476,7 +471,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 {
                     if((DINOPOSX >= iniPosX && DINOPOSX < iniPosX+2) || (DINOPOSX+1 >= iniPosX && DINOPOSX+1 < iniPosX+2) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+2))
                     {
-                        Sleep(500);
                         bateu = 1;
                     }
                 }
@@ -494,7 +488,6 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 if(DINOPOSX+6 == iniPosX+2) //testa se a cabeca do dinossauro bate no corpo dos cactus
                 {
                     bateu = 1;
-                    Sleep(500);
                 }
                 break;
 
@@ -502,13 +495,41 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 if(DINOPOSX+4 == iniPosX)
                 {
                     bateu = 1;
-                    Sleep(500);
                 }
                 break;
 
         }
     }
-
     return bateu;
 
+}
+
+void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+{
+    clrscr();
+    *vidas = *vidas - 1;
+
+    Sleep(1000);
+
+    if(*vidas == 0)
+    {
+        printf("Game Over"); //Adicionar uma função que imprime uma tela de game over
+        *gameOver = 1;
+        Sleep(1500);
+    }
+    else
+    {
+        *dinoPosY = 14;
+        *pronto = 1;
+        *nivel = 1;
+        *velJogo = *nivel * 250;
+        *abaixado = 0;
+        *gameOver = 0;
+        *pausado = 0;
+        *levouDano = 0;
+
+        imprimeCenario(dinoPosY, vidas, pontos, nivel);
+        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+        Sleep(50000);
+    }
 }
