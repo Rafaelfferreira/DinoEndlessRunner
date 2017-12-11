@@ -16,7 +16,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
 
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(&key, dinoPosY, pronto, velJogo, abaixado, &FLPulando, &tempoPulo);
+        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -175,7 +175,7 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo)
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY)
 { //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -190,6 +190,8 @@ void interacao(char *k, int dinoPosY, int *pronto, int velJogo, int *abaixado, i
         {
             abaixando(dinoPosY, abaixado);
         }
+        else if(*k == 'p')
+            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY);
     }
     //Esse if executa se o jogador nao estiver pressionando a tecla 'c' e se o dinossauro estiver abaixado
     //0x43 e 0x28 sao os KeyCodes das teclas C e da seta para baixo
@@ -520,9 +522,7 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 
     if(*vidas == 0)
     {
-        printf("Game Over"); //Adicionar uma função que imprime uma tela de game over
-        *gameOver = 1;
-        Sleep(1500);
+        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano);
     }
     else
     {
@@ -565,7 +565,104 @@ void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas
     gotoxy(56,13);
     printf(" ");
 
+    while(kbhit()) //Limpa o buffer caso o jogador aperte espaço na tela de morte
+            getch();
+
     imprimeCenario(dinoPosY, vidas, pontos, nivel);
     rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+
+}
+
+void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+{
+    char opcao;
+
+    *gameOver = 1;
+
+    gotoxy(48,7);
+    printf("GAME OVER");
+    gotoxy(44,12);
+    printf("Selecione uma opcao: ");
+    gotoxy(39,13);
+    printf("1 - Voltar ao menu inicial");
+    gotoxy(48,14);
+    printf("2 - Sair");
+
+    gotoxy(1,18);
+    while(opcao != '1' && opcao != '2') //faz com que o programa nao aceite outras entradas se nao 1 ou 2
+        opcao = getch();
+
+    if(opcao == '2')
+        exit(0); //termina a aplicação
+    else if(opcao == '1')
+        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+}
+
+void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
+{
+    clrscr();
+
+    *dinoPosY = 14;
+    *pronto = 1;
+    *nivel = 1;
+    *vidas = 3;
+    *velJogo = *nivel * 250;
+    *abaixado = 0;
+    *gameOver = 0;
+    *pausado = 0;
+    *gameOver = 0;
+
+    char opcao;
+
+    gotoxy(47,7);
+    printf("T-REX RUNNER");
+    gotoxy(45, 11);
+    printf("(n) - Novo Jogo");
+    gotoxy(43,12);
+    printf("(c) - Carregar Jogo");
+    gotoxy(46,13);
+    printf("(t) - Top 10");
+    gotoxy(47,14);
+    printf("(r) - Sair");
+    gotoxy(1,20);
+
+    while(opcao != 'n' && opcao != 'c' && opcao != 't' && opcao != 'r') //faz com que o programa nao aceite outras entradas se nao 1 ou 2
+        opcao = getch();
+
+    if(opcao == 'n')
+    {
+        clrscr();
+        imprimeCenario(dinoPosY,vidas,pontos,nivel);
+        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+    }
+
+    else if(opcao == 'r')
+        exit(0); //termina o programa e retorna 0;
+}
+
+void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY)
+{
+    clrscr();
+    char opcao;
+    gotoxy(47,7);
+    printf("PAUSADO");
+    gotoxy(42, 11);
+    printf("(s) - Salvar Jogo");
+    gotoxy(40,12);
+    printf("(r) - voltar ao menu");
+
+    while(opcao != 's' && opcao != 'r' && opcao != 'p') //faz com que o programa nao aceite outras entradas se nao 1 ou 2
+        opcao = getch();
+
+    if(opcao == 'p')
+    {
+        clrscr();
+        imprimeCenario(dinoPosY,vidas,pontos,nivel);
+    }
+    else if(opcao == 'r')
+    {
+        int gameOver = 0;
+        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado);
+    }
 
 }
