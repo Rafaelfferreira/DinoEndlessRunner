@@ -13,5 +13,6 @@ void movimentaAG(int *iniPosx, int iniPosY, int *nIni);
 void movimentaAP(int *iniPosx, int iniPosY, int *nIni);
 int testaDano(int dinoPosY, int nIni, int iniPosY, int iniPosX, int abaixado, int tempoPulo);
 void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano);
+void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano);
 
 #endif // _GAMELIB_H_

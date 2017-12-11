@@ -49,29 +49,36 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
             }
         }
 
+        if(levouDano == 1) //confere se o inimigo 1 deu dano
+        {
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano);
+            break; //sai do while caso gameOver vire 1 aqui;
+        }
+
         //se o inimigo 2 estiver na tela atualiza sua posição
         if(ini2 != 0)
         {
+            ini2 = 1;
             if(ini2 == 1)
             {
                 ini2PosY = 14;
-                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaTG(&ini2PosX, ini2PosY, &ini2);
             }
             else if(ini2 == 2)
             {
                 movimentaAG(&ini2PosX, ini2PosY, &ini2);
-                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
             }
             else if(ini2 == 3)
             {
-                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaAP(&ini2PosX, ini2PosY, &ini2);
             }
             else
             {
                 ini2PosY = 14;
-                testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
+                levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
                 movimentaTP(&ini2PosX, ini2PosY, &ini2);
             }
         }
@@ -129,7 +136,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
             }
         }
 
-        if(levouDano == 1)
+        if(levouDano == 1) //confere se o inimigo 2 deu dano
             perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano);
 
         Sleep(300 - *velJogo);//controla a velocidade do jogo
@@ -142,6 +149,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
 void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 {
     //Imprime a interface
+    gotoxy(1,1);
     printf("Vidas: %d", *vidas);
     printf("\nPontos: %d", *pontos);
     printf("\nNivel: %d", *nivel);
@@ -506,10 +514,9 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
 
 void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
 {
+    Sleep(250); //tempo para o jogador ver que ele morreu
     clrscr();
     *vidas = *vidas - 1;
-
-    Sleep(1000);
 
     if(*vidas == 0)
     {
@@ -519,17 +526,46 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
     }
     else
     {
-        *dinoPosY = 14;
-        *pronto = 1;
-        *nivel = 1;
-        *velJogo = *nivel * 250;
-        *abaixado = 0;
-        *gameOver = 0;
-        *pausado = 0;
-        *levouDano = 0;
-
-        imprimeCenario(dinoPosY, vidas, pontos, nivel);
-        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
-        Sleep(50000);
+        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano);
     }
+}
+
+//recomeca eh a funcao que exibe a tela de morte do jogo
+void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+{
+    *dinoPosY = 14;
+    *pronto = 1;
+    *nivel = 1;
+    *velJogo = *nivel * 250;
+    *abaixado = 0;
+    *gameOver = 0;
+    *pausado = 0;
+    *levouDano = 0;
+
+    gotoxy(48,10);
+    printf("Vidas Restantes: %d ", *vidas);
+    Sleep(1000);
+    //Imprime um contador para quando o jogo voltara
+    gotoxy(50,12);
+    printf("recomecando em:");
+    gotoxy(56,13);
+    printf("3 ");
+    Sleep(600);
+    gotoxy(56,13);
+    printf("2 ");
+    Sleep(600);
+    gotoxy(56,13);
+    printf("1 ");
+    Sleep(600);
+
+    gotoxy(48,10);
+    printf("                   ");
+    gotoxy(50,12);
+    printf("               ");
+    gotoxy(56,13);
+    printf(" ");
+
+    imprimeCenario(dinoPosY, vidas, pontos, nivel);
+    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+
 }
