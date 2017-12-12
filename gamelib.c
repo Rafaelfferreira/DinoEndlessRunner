@@ -7,16 +7,17 @@
 #define DINOPOSX 12
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
+void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
 {
     srand(time(NULL)); //inicializando a seed do rand
     char key;
     int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
-    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)0
+    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
+    int countNivel = 0; //conta ate 100 e 500 respectivamente e incrementa a devida variavel
 
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY);
+        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -29,29 +30,29 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
             {
                 ini1PosY = 14;
                 levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
-                movimentaTG(&ini1PosX, ini1PosY, &ini1);
+                movimentaTG(&ini1PosX, ini1PosY, &ini1, pontos, &countNivel, countVida);
             }
             else if(ini1 == 2)
             {
-                movimentaAG(&ini1PosX, ini1PosY, &ini1);
+                movimentaAG(&ini1PosX, ini1PosY, &ini1, pontos, &countNivel, countVida);
                 levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
             }
             else if(ini1 == 3)
             {
                 levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
-                movimentaAP(&ini1PosX, ini1PosY, &ini1);
+                movimentaAP(&ini1PosX, ini1PosY, &ini1, pontos, &countNivel, countVida);
             }
             else
             {
                 ini1PosY = 14;
                 levouDano = testaDano(*dinoPosY, ini1, ini1PosY, ini1PosX, *abaixado, tempoPulo);
-                movimentaTP(&ini1PosX, ini1PosY, &ini1);
+                movimentaTP(&ini1PosX, ini1PosY, &ini1, pontos, &countNivel, countVida);
             }
         }
 
         if(levouDano == 1) //confere se o inimigo 1 deu dano
         {
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano);
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida);
             break; //sai do while caso gameOver vire 1 aqui;
         }
 
@@ -63,23 +64,23 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
             {
                 ini2PosY = 14;
                 levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
-                movimentaTG(&ini2PosX, ini2PosY, &ini2);
+                movimentaTG(&ini2PosX, ini2PosY, &ini2, pontos, &countNivel, countVida);
             }
             else if(ini2 == 2)
             {
-                movimentaAG(&ini2PosX, ini2PosY, &ini2);
+                movimentaAG(&ini2PosX, ini2PosY, &ini2, pontos, &countNivel, countVida);
                 levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
             }
             else if(ini2 == 3)
             {
                 levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
-                movimentaAP(&ini2PosX, ini2PosY, &ini2);
+                movimentaAP(&ini2PosX, ini2PosY, &ini2, pontos, &countNivel, countVida);
             }
             else
             {
                 ini2PosY = 14;
                 levouDano = testaDano(*dinoPosY, ini2, ini2PosY, ini2PosX, *abaixado, tempoPulo);
-                movimentaTP(&ini2PosX, ini2PosY, &ini2);
+                movimentaTP(&ini2PosX, ini2PosY, &ini2, pontos, &countNivel, countVida);
             }
         }
 
@@ -137,9 +138,31 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
         }
 
         if(levouDano == 1) //confere se o inimigo 2 deu dano
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano);
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida);
 
-        Sleep(300 - *velJogo);//controla a velocidade do jogo
+        //imprime os pontos atuais na tela, fazer com que talvez demore mais para ganhar cada ponto, pois os ciclos estao mto rapidos
+        *pontos = *pontos + 1;
+        gotoxy(9,2);
+        printf("%d", *pontos);
+
+        countNivel++;
+        if(countNivel >= 100)
+        {
+            *nivel = *nivel + 1;
+            countNivel = 0;
+            gotoxy(8,3);
+            printf("%d", *nivel);
+        }
+        *countVida = *countVida + 1;
+        if(*countVida >= 500)
+        {
+            *vidas = *vidas + 1;
+            *countVida = 0;
+            gotoxy(8,1);
+            printf("%d", *vidas);
+        }
+
+        Sleep(100 - (*nivel * 10));//controla a velocidade do jogo
     }
 
 }
@@ -175,7 +198,7 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY)
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida)
 { //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -191,7 +214,7 @@ void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, in
             abaixando(dinoPosY, abaixado);
         }
         else if(*k == 'p')
-            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY);
+            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida);
     }
     //Esse if executa se o jogador nao estiver pressionando a tecla 'c' e se o dinossauro estiver abaixado
     //0x43 e 0x28 sao os KeyCodes das teclas C e da seta para baixo
@@ -282,7 +305,7 @@ void levantando(int *dinoPosY, int *abaixado)
     *abaixado = 0;
 }
 
-void movimentaTG(int *iniPosx, int iniPosY, int *nIni)
+void movimentaTG(int *iniPosx, int iniPosY, int *nIni, int *pontos, int *countNivel, int *countVida)
 {
     if(*iniPosx > 0)
     {
@@ -308,10 +331,13 @@ void movimentaTG(int *iniPosx, int iniPosY, int *nIni)
         printf("     ");
         *nIni = 0;
         *iniPosx = 90;
+        *pontos = *pontos + 10;
+        *countNivel = *countNivel + 10;
+        *countVida = *countVida + 10;
     }
 }
 
-void movimentaTP(int *iniPosx, int iniPosY, int *nIni)
+void movimentaTP(int *iniPosx, int iniPosY, int *nIni, int *pontos, int *countNivel, int *countVida)
 {
     if(*iniPosx > 0)
     {
@@ -337,10 +363,13 @@ void movimentaTP(int *iniPosx, int iniPosY, int *nIni)
         printf("    ");
         *nIni = 0;
         *iniPosx = 90;
+        *pontos = *pontos + 10;
+        *countNivel = *countNivel + 10;
+        *countVida = *countVida + 10;
     }
 }
 
-void movimentaAG(int *iniPosx, int iniPosY, int *nIni)
+void movimentaAG(int *iniPosx, int iniPosY, int *nIni, int *pontos, int *countNivel, int *countVida)
 {
     if(*iniPosx > 0)
     {
@@ -362,10 +391,13 @@ void movimentaAG(int *iniPosx, int iniPosY, int *nIni)
         printf("       ");
         *nIni = 0;
         *iniPosx = 90;
+        *pontos = *pontos + 10;
+        *countNivel = *countNivel + 10;
+        *countVida = *countVida + 10;
     }
 }
 
-void movimentaAP(int *iniPosx, int iniPosY, int *nIni)
+void movimentaAP(int *iniPosx, int iniPosY, int *nIni, int *pontos, int *countNivel, int *countVida)
 {
     if(*iniPosx > 0)
     {
@@ -383,6 +415,9 @@ void movimentaAP(int *iniPosx, int iniPosY, int *nIni)
         printf("       ");
         *nIni = 0;
         *iniPosx = 90;
+        *pontos = *pontos + 10;
+        *countNivel = *countNivel + 10;
+        *countVida = *countVida + 10;
     }
 }
 
@@ -395,7 +430,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
         //AVALIA QUE TIPO DE INIMIGO É E PROCESSA OS DADOS DE FORMA DIFERENTE
         switch(nIni)
         {
-            case 1:
+            case 1: //Terrestre Grande
                 //O if e o else a seguir testam se houve colisão quando o dinossauro esta na frente dos cactus
                 if((DINOPOSX+3) == (iniPosX-1)) //testa se o dinossauro vai bater a cabeça nos "braços" dos cactus
                 {
@@ -422,7 +457,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
 
             break;
 
-            case 2:
+            case 2://Aereo Grande
                 if((dinoPosY == iniPosY+2) || (dinoPosY == iniPosY+1) || (dinoPosY == iniPosY)) //testa se a cabeça esta na mesma altura do aerolito
                 {
                     if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+7) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+7)) //testa se a cabeça esta na mesma posicao que o aerolito
@@ -430,7 +465,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                         bateu = 1;
                     }
                 }
-                else if(dinoPosY+1 == iniPosY || dinoPosY+1 == iniPosY+1 || iniPosX+1 == iniPosY+2 || dinoPosY+2 == iniPosY || dinoPosY+2 == iniPosY+1 || iniPosX+2 == iniPosY+2 || dinoPosY+3 == iniPosY || dinoPosY+3 == iniPosY+1 || iniPosX+3 == iniPosY+2)
+                else if(dinoPosY+1 == iniPosY || dinoPosY+1 == iniPosY+1 || dinoPosY+1 == iniPosY+2 || dinoPosY+2 == iniPosY || dinoPosY+2 == iniPosY+1 || dinoPosY+2 == iniPosY+2 || dinoPosY+3 == iniPosY || dinoPosY+3 == iniPosY+1 || dinoPosY+3 == iniPosY+2)
                 {
                     //if testa se a frente e a traseira do corpo do dinossauro estao encostando na nuvem
                     if((DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6) || (DINOPOSX >= iniPosX && DINOPOSX < iniPosX+6))
@@ -440,7 +475,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 }
             break;
 
-            case 3:
+            case 3: //Aereo Pequeno
                 if((dinoPosY == iniPosY+1) || (dinoPosY == iniPosY)) //testa se a cabeça esta na mesma altura do aerolito
                 {
                     if((DINOPOSX+3 >= iniPosX && DINOPOSX+3 < iniPosX+6) || (DINOPOSX+2 >= iniPosX && DINOPOSX+2 < iniPosX+6)) //testa se a cabeça esta na mesma posicao que o aerolito
@@ -459,7 +494,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
                 }
             break;
 
-            case 4:
+            case 4: //Terrestre pequeno
                 if((DINOPOSX+3) == (iniPosX)) //testa se o dinossauro vai bater a cabeça nos "braços" dos cactus
                 {
                     if(dinoPosY == iniPosY)
@@ -514,7 +549,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
 
 }
 
-void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
 {
     Sleep(250); //tempo para o jogador ver que ele morreu
     clrscr();
@@ -522,16 +557,16 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 
     if(*vidas == 0)
     {
-        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano);
+        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida);
     }
     else
     {
-        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano);
+        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida);
     }
 }
 
 //recomeca eh a funcao que exibe a tela de morte do jogo
-void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
 {
     *dinoPosY = 14;
     *pronto = 1;
@@ -569,11 +604,11 @@ void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas
             getch();
 
     imprimeCenario(dinoPosY, vidas, pontos, nivel);
-    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
 
 }
 
-void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano)
+void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
 {
     char opcao;
 
@@ -581,11 +616,13 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
 
     gotoxy(48,7);
     printf("GAME OVER");
-    gotoxy(44,12);
+    gotoxy(48,11);
+    printf("Score: %d", *pontos);
+    gotoxy(44,13);
     printf("Selecione uma opcao: ");
-    gotoxy(39,13);
+    gotoxy(39,14);
     printf("1 - Voltar ao menu inicial");
-    gotoxy(48,14);
+    gotoxy(48,15);
     printf("2 - Sair");
 
     gotoxy(1,18);
@@ -595,14 +632,15 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
     if(opcao == '2')
         exit(0); //termina a aplicação
     else if(opcao == '1')
-        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
 }
 
-void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado)
+void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
 {
     clrscr();
 
     *dinoPosY = 14;
+    *pontos = 0;
     *pronto = 1;
     *nivel = 1;
     *vidas = 3;
@@ -633,14 +671,14 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
     {
         clrscr();
         imprimeCenario(dinoPosY,vidas,pontos,nivel);
-        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado);
+        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
     }
 
     else if(opcao == 'r')
         exit(0); //termina o programa e retorna 0;
 }
 
-void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY)
+void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida)
 {
     clrscr();
     char opcao;
@@ -662,7 +700,7 @@ void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vida
     else if(opcao == 'r')
     {
         int gameOver = 0;
-        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado);
+        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
     }
 
 }
