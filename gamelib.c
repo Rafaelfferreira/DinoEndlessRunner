@@ -5,9 +5,10 @@
 #include <time.h>
 #include "gamelib.h"
 #define DINOPOSX 12
+#define TLINHA 30 //tamanho maximo de uma linha de arquivo
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
+void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21])
 {
     srand(time(NULL)); //inicializando a seed do rand
     char key;
@@ -52,7 +53,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
 
         if(levouDano == 1) //confere se o inimigo 1 deu dano
         {
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida);
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador);
             break; //sai do while caso gameOver vire 1 aqui;
         }
 
@@ -138,7 +139,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
         }
 
         if(levouDano == 1) //confere se o inimigo 2 deu dano
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida);
+            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador);
 
         //imprime os pontos atuais na tela, fazer com que talvez demore mais para ganhar cada ponto, pois os ciclos estao mto rapidos
         *pontos = *pontos + 1;
@@ -549,7 +550,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
 
 }
 
-void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
+void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
 {
     Sleep(250); //tempo para o jogador ver que ele morreu
     clrscr();
@@ -557,16 +558,16 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 
     if(*vidas == 0)
     {
-        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida);
+        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador);
     }
     else
     {
-        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida);
+        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador);
     }
 }
 
 //recomeca eh a funcao que exibe a tela de morte do jogo
-void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
+void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
 {
     *dinoPosY = 14;
     *pronto = 1;
@@ -604,11 +605,11 @@ void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas
             getch();
 
     imprimeCenario(dinoPosY, vidas, pontos, nivel);
-    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador);
 
 }
 
-void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida)
+void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
 {
     char opcao;
 
@@ -625,6 +626,8 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
     gotoxy(48,15);
     printf("2 - Sair");
 
+    scores(nomeJogador, *pontos);
+
     gotoxy(1,18);
     while(opcao != '1' && opcao != '2') //faz com que o programa nao aceite outras entradas se nao 1 ou 2
         opcao = getch();
@@ -633,6 +636,7 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
         exit(0); //termina a aplicação
     else if(opcao == '1')
         menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+
 }
 
 void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
@@ -650,7 +654,8 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
     *pausado = 0;
     *gameOver = 0;
 
-    char opcao;
+    char opcao = ' ';
+    char nomeJogador[21];
 
     gotoxy(47,7);
     printf("T-REX RUNNER");
@@ -670,8 +675,13 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
     if(opcao == 'n')
     {
         clrscr();
+        gotoxy(35,7);
+        printf("Insira o nome do jogador: ");
+        gets(nomeJogador);
+
+        clrscr();
         imprimeCenario(dinoPosY,vidas,pontos,nivel);
-        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+        rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador);
     }
 
     else if(opcao == 'r')
@@ -703,4 +713,114 @@ void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vida
         menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
     }
 
+}
+
+void scores(char nomeJogador[21], int pontos)
+{
+    FILE *arqScores, *arqRank;
+    str_pontuacao varbuffer, temporario[10], auxiliar; //temporario é onde armazenaremos o ranking para ordena-lo e auxiliar é a variavel que usaremos para fazer o bubble sort
+    char ch; //variavel usada para procurar quantos '\n' tem no ranking (e consequentemente, quantos jogadores)
+    char linha[TLINHA], linhaNova[TLINHA];
+    int erro = 0, escreveu = 0, cont = 0, i, j;
+
+    strcpy(varbuffer.nome, nomeJogador);
+    varbuffer.score = pontos;
+
+    //adiciona o score ao arquivo scores.txt
+    arqScores = fopen("scores.txt", "a");
+    if(arqScores == NULL)
+    {
+        clrscr();
+        gotoxy(45,10);
+        printf("Erro no arquivo scores.txt");
+    }
+    else
+        fprintf(arqScores, "%s,%d\n", varbuffer.nome, varbuffer.score);
+
+    fclose(arqScores);
+///////////////////////////////////////////////////////////////////////////////////////
+    arqRank = fopen("hiscore.txt", "r"); //abre em modo de leitura para ver se ja tem 10 entradas
+    if(arqRank == NULL)
+    {
+        arqRank = fopen("hiscore.txt", "w"); //abre em modo de escrita caso nao tenha conseguido abrir no modo de leitura (pois nao existia o arquivo)
+        if(arqRank == NULL)
+        {
+            clrscr();
+            gotoxy(45,10);
+            printf("Erro no arquivo hiscore.txt");
+            erro = 1;
+        }
+        else
+        {
+            fprintf(arqRank, "%s,%d\n", varbuffer.nome, varbuffer.score); //escreve na primeira linha do arquivo
+            escreveu = 1;
+            fclose(arqRank);
+        }
+    }
+
+    fclose(arqRank);
+
+
+    if(erro == 0 && escreveu == 0)
+    {
+        arqRank = fopen("hiscore.txt", "a+");
+
+            //pega ate 10 items do ranking e salva no array de pontuacoes "temporario"
+            while(!feof(arqRank) && cont < 10)
+            {
+                if(fgets(linha,TLINHA,arqRank)!=NULL) //le uma linha do arquivo
+                {
+                    strcpy(temporario[cont].nome,strtok(linha,","));
+                    temporario[cont].score = atoi(strtok(NULL,",")); //copia a linha lida para a variavel temporaria
+                    cont++;
+                }
+            }
+            //se a nova pontuacao for maior do que a ultima no ranking, coloca a nova pontuacao em ultimo
+            if(cont == 10 && varbuffer.score > temporario[cont-1].score)
+            {
+                strcpy(temporario[cont-1].nome, varbuffer.nome);
+                temporario[cont-1].score = varbuffer.score;
+            }
+            else if(cont < 11) //se tem menos de 10 jogadores no ranking coloca a nova pontuacao em ultimo
+            {
+                strcpy(temporario[cont].nome, varbuffer.nome);
+                temporario[cont].score = varbuffer.score;
+                cont++;
+            }
+
+            //ordena o array temporario
+            for(j=0;j<cont;j++)
+            {
+                for(i=0;i<(cont-1);i++)
+                {
+                    if(temporario[i].score < temporario[i+1].score)
+                    {
+                        strcpy(auxiliar.nome,temporario[i].nome);
+                        auxiliar.score = temporario[i].score;
+
+                        strcpy(temporario[i].nome, temporario[i+1].nome);
+                        temporario[i].score = temporario[i+1].score;
+
+                        strcpy(temporario[i+1].nome, auxiliar.nome);
+                        temporario[i+1].score = auxiliar.score;
+                    }
+                }
+            }
+
+            //cria o novo ranking
+            arqRank = fopen("hiscore.txt", "w");
+            if(arqRank == NULL)
+            {
+                clrscr();
+                gotoxy(45,10);
+                printf("Erro no arquivo hiscore.txt");
+            }
+            else
+            {
+                for(i=0;i<cont;i++)
+                    fprintf(arqRank, "%s,%d\n", temporario[i].nome, temporario[i].score); //escreve na primeira linha do arquivo
+            }
+
+    }
+    fclose(arqRank);
 }
