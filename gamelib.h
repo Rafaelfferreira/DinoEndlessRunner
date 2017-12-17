@@ -25,5 +25,6 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
 void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida);
 void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida);
 void scores(char nomeJogador[21], int pontos);
+void ranking(char *opcao);
 
 #endif // _GAMELIB_H_

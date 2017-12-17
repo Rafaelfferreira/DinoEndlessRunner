@@ -1,3 +1,4 @@
+BIG SHAQ,1542
 se,221
 um,146
 dos,146
@@ -7,4 +8,3 @@ vamo ve2,146
 tre,78
 sinc,78
 siete,76
-dies,75
