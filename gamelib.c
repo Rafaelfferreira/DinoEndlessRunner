@@ -20,7 +20,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
 
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida);
+        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida, nomeJogador);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -204,7 +204,7 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida)
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21])
 { //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -220,7 +220,7 @@ void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, in
             abaixando(dinoPosY, abaixado);
         }
         else if(*k == 'p')
-            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida);
+            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador);
     }
     //Esse if executa se o jogador nao estiver pressionando a tecla 'c' e se o dinossauro estiver abaixado
     //0x43 e 0x28 sao os KeyCodes das teclas C e da seta para baixo
@@ -647,6 +647,7 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
 {
     int saiuDoJogo = 0;
     clrscr();
+    fflush(stdin);
 
     *dinoPosY = 14;
     *pontos = 0;
@@ -697,10 +698,11 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
             }
             else if(opcao == 'r')
                 saiuDoJogo = 1;
+                exit(0);
         }
 }
 
-void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida)
+void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21])
 {
     clrscr();
     char opcao;
@@ -722,6 +724,7 @@ void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vida
     else if(opcao == 'r')
     {
         int gameOver = 0;
+        scores(nomeJogador, *pontos);
         menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
     }
 
@@ -849,7 +852,13 @@ void ranking(char *opcao)
 
     arqRank = fopen("hiscore.txt", "r");
     if(arqRank == NULL)
-        printf("O arquivo hiscore esta vazio ou ha algum erro de execução");
+    {
+        gotoxy(35,9);
+        printf("Nao existem pontuacoes cadastradas no ranking");
+        gotoxy(40,10);
+        printf("Pressione enter para voltar ao menu");
+        scanf(stdin);
+    }
     else
     {
         while(!feof(arqRank))
@@ -887,6 +896,6 @@ void ranking(char *opcao)
             key = getch();
     }
 
-    *opcao = ' ';
+    *opcao = 'q';
     fclose(arqRank);
 }

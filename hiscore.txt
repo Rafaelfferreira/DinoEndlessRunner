@@ -5,6 +5,7 @@ dos,146
 quatr,146
 nueve,146
 vamo ve2,146
+teste,81
 tre,78
 sinc,78
-siete,76
+teste,8
