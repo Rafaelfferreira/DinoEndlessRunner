@@ -7,10 +7,16 @@ typedef struct struct_pontuacao
     int score;
 }str_pontuacao;
 
+typedef struct struct_save
+{
+    char nome[25];
+    int vidas, pontos, nivel, ini1, ini1PosX, ini1PosY, ini2, ini2PosX, ini2PosY;
+}str_save;
+
 void rodajogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21]);
 void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel);
 //A funcao interacao precisa de tantas informacoes pois ela talvez precise referencias as posicoes dos inimigos e status do jogador a funcao de pause e de salvar jogo
-void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21]);
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21], int *nSaves);
 void pulando(int *dinoPosY, int *pronto, int *tempoPulo, int *FLPulando);
 void abaixando(int *dinoPosY, int *abaicado);
 void levantando(int *dinoPosY, int *abaixado);
@@ -23,8 +29,9 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21]);
 void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21]);
 void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida);
-void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21]);
+void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21], int *nSaves);
 void scores(char nomeJogador[21], int pontos);
 void ranking(char *opcao);
+salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *ini1PosY, int *ini2, int *ini2PosX, int *ini2PosY, char nomeJogador[21], int *nSaves);
 
 #endif // _GAMELIB_H_

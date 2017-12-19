@@ -13,14 +13,15 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
     srand(time(NULL)); //inicializando a seed do rand
     char key;
     int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
-    int ini1PosX = 90, ini1PosY, inimigo = 0, ini2PosX = 90, ini2PosY, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
+    int ini1PosX = 90, ini1PosY = 0, inimigo = 0, ini2PosX = 90, ini2PosY = 0, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
     int countNivel = 0; //conta ate 100 e 500 respectivamente e incrementa a devida variavel
+    int nSaves = 0;
 
     *countVida = 0;
 
     while(*gameOver == 0 && *pausado == 0)
     {
-        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida, nomeJogador);
+        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida, nomeJogador, &nSaves);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -204,7 +205,7 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21])
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
 { //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -220,7 +221,7 @@ void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, in
             abaixando(dinoPosY, abaixado);
         }
         else if(*k == 'p')
-            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador);
+            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
     }
     //Esse if executa se o jogador nao estiver pressionando a tecla 'c' e se o dinossauro estiver abaixado
     //0x43 e 0x28 sao os KeyCodes das teclas C e da seta para baixo
@@ -697,15 +698,18 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
                 menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
             }
             else if(opcao == 'r')
+            {
                 saiuDoJogo = 1;
                 exit(0);
+            }
         }
 }
 
-void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21])
+void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
 {
     clrscr();
     char opcao;
+
     gotoxy(47,7);
     printf("PAUSADO");
     gotoxy(42, 11);
@@ -726,6 +730,11 @@ void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vida
         int gameOver = 0;
         scores(nomeJogador, *pontos);
         menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
+    }
+    else if(opcao == 's')
+    {
+        salvarJogo(vidas, pontos, nivel, ini1, ini1PosX, ini1PosY, ini2, ini2PosX, ini2PosY, nomeJogador, nSaves);
+        menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
     }
 
 }
@@ -898,4 +907,41 @@ void ranking(char *opcao)
 
     *opcao = 'q';
     fclose(arqRank);
+}
+
+salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *ini1PosY, int *ini2, int *ini2PosX, int *ini2PosY, char nomeJogador[21], int *nSaves)
+{
+    FILE *arq1;
+    str_save arquivoSave;
+    char nomeArquivo[25];
+
+    *nSaves = *nSaves+1;
+    sprintf(nomeArquivo, "%s%d.bin", nomeJogador, *nSaves); //faz com que nomeArquivo receba o valor NomeJogador + nSaves  .txt
+
+    strcpy(arquivoSave.nome, nomeArquivo);
+    arquivoSave.vidas = *vidas;
+    arquivoSave.pontos = *pontos;
+    arquivoSave.nivel = *nivel;
+    arquivoSave.ini1 = *ini1;
+    arquivoSave.ini1PosX = *ini1PosX;
+    arquivoSave.ini1PosY = *ini1PosY;
+    arquivoSave.ini2 = *ini2;
+    arquivoSave.ini2PosX = *ini2PosX;
+    arquivoSave.ini2PosY = *ini2PosY;
+
+
+    arq1 = fopen(nomeArquivo,"wb");
+    if(arq1 == NULL)
+        printf("Erro ao salvar o jogo");
+    else
+    {
+        if(fwrite(&arquivoSave, sizeof(str_save), 1, arq1) != 1)
+            printf("erro no save");
+    }
+
+    fclose(arq1);
+
+    gotoxy(43,9);
+    printf("salvando jogo...");
+    Sleep(600);
 }

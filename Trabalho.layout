@@ -2,37 +2,39 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gamelib.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="33127" topLine="76" />
+		</Cursor>
+		<Folding>
+			<Collapse line="11" />
+			<Collapse line="179" />
+			<Collapse line="208" />
+			<Collapse line="235" />
+			<Collapse line="286" />
+			<Collapse line="302" />
+			<Collapse line="315" />
+			<Collapse line="347" />
+			<Collapse line="379" />
+			<Collapse line="407" />
+			<Collapse line="431" />
+			<Collapse line="558" />
+			<Collapse line="575" />
+			<Collapse line="617" />
+			<Collapse line="647" />
+			<Collapse line="708" />
+			<Collapse line="742" />
+			<Collapse line="853" />
+		</Folding>
+	</File>
+	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="955" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="gamelib.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="25317" topLine="229" />
-		</Cursor>
-		<Folding>
-			<Collapse line="30" />
-			<Collapse line="63" />
-			<Collapse line="178" />
-			<Collapse line="234" />
-			<Collapse line="285" />
-			<Collapse line="301" />
-			<Collapse line="314" />
-			<Collapse line="346" />
-			<Collapse line="378" />
-			<Collapse line="406" />
-			<Collapse line="430" />
-			<Collapse line="557" />
-			<Collapse line="574" />
-			<Collapse line="616" />
-			<Collapse line="733" />
-			<Collapse line="844" />
-		</Folding>
-	</File>
 	<File name="gamelib.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="833" topLine="0" />
+			<Cursor1 position="279" topLine="4" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
