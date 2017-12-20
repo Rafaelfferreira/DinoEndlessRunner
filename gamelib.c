@@ -8,14 +8,46 @@
 #define TLINHA 30 //tamanho maximo de uma linha de arquivo
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21])
+void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21], int loadGame)
 {
     srand(time(NULL)); //inicializando a seed do rand
     char key;
     int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
     int ini1PosX = 90, ini1PosY = 0, inimigo = 0, ini2PosX = 90, ini2PosY = 0, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
     int countNivel = 0; //conta ate 100 e 500 respectivamente e incrementa a devida variavel
-    int nSaves = 0;
+    int nSaves = 0, carregou = 0;
+
+    if(loadGame == 1) //se esta carregando um save ao inves de começar um jogo novo
+    {
+        carregou = carregarJogo(nomeJogador, vidas, pontos, nivel, &ini1, &ini1PosX, &ini1PosY, &ini2, &ini2PosX, &ini2PosY);
+        if(carregou == 0)
+        {
+            clrscr();
+            printf("falha ao carregar o save");
+            printf("\npressione ENTER para voltar ao menu");
+            scanf(stdin);
+            menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
+        }
+        else
+        {
+            gotoxy(43,9);
+            printf("Jogo carregado com sucesso!");
+            gotoxy(50,11);
+            printf("Comecando em:");
+            gotoxy(56,13);
+            printf("3 ");
+            Sleep(600);
+            gotoxy(56,13);
+            printf("2 ");
+            Sleep(600);
+            gotoxy(56,13);
+            printf("1 ");
+            Sleep(600);
+            clrscr();
+        }
+    }
+
+    imprimeCenario(dinoPosY,vidas,pontos,nivel);
 
     *countVida = 0;
 
@@ -574,6 +606,8 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 //recomeca eh a funcao que exibe a tela de morte do jogo
 void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
 {
+    int existeSave = 0; //flag que serve para mostrar que nao esta carregando um jogo salvo
+
     *dinoPosY = 14;
     *pronto = 1;
     *nivel = 1;
@@ -610,7 +644,7 @@ void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas
             getch();
 
     imprimeCenario(dinoPosY, vidas, pontos, nivel);
-    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador);
+    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
 
 }
 
@@ -646,7 +680,7 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
 
 void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
 {
-    int saiuDoJogo = 0;
+    int saiuDoJogo = 0, existeSave = 0;
     clrscr();
     fflush(stdin);
 
@@ -662,7 +696,7 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
     *gameOver = 0;
 
     char opcao = ' ';
-    char nomeJogador[21];
+    char nomeJogador[21] = " ";
 
     gotoxy(47,7);
     printf("T-REX RUNNER");
@@ -689,13 +723,17 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
                 gets(nomeJogador);
 
                 clrscr();
-                imprimeCenario(dinoPosY,vidas,pontos,nivel);
-                rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador);
+                rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
             }
             else if(opcao == 't')
             {
                 ranking(&opcao);
                 menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+            }
+            else if(opcao == 'c')
+            {
+                existeSave = 1;
+                rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
             }
             else if(opcao == 'r')
             {
@@ -806,7 +844,7 @@ void scores(char nomeJogador[21], int pontos)
                 strcpy(temporario[cont-1].nome, varbuffer.nome);
                 temporario[cont-1].score = varbuffer.score;
             }
-            else if(cont < 11) //se tem menos de 10 jogadores no ranking coloca a nova pontuacao em ultimo
+            else if(cont < 10) //se tem menos de 10 jogadores no ranking coloca a nova pontuacao em ultimo
             {
                 strcpy(temporario[cont].nome, varbuffer.nome);
                 temporario[cont].score = varbuffer.score;
@@ -845,7 +883,6 @@ void scores(char nomeJogador[21], int pontos)
                 for(i=0;i<cont;i++)
                     fprintf(arqRank, "%s,%d\n", temporario[i].nome, temporario[i].score); //escreve na primeira linha do arquivo
             }
-
     }
     fclose(arqRank);
 }
@@ -918,7 +955,7 @@ salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *i
     *nSaves = *nSaves+1;
     sprintf(nomeArquivo, "%s%d.bin", nomeJogador, *nSaves); //faz com que nomeArquivo receba o valor NomeJogador + nSaves  .txt
 
-    strcpy(arquivoSave.nome, nomeArquivo);
+    strcpy(arquivoSave.nome, nomeJogador);
     arquivoSave.vidas = *vidas;
     arquivoSave.pontos = *pontos;
     arquivoSave.nivel = *nivel;
@@ -944,4 +981,42 @@ salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *i
     gotoxy(43,9);
     printf("salvando jogo...");
     Sleep(600);
+}
+
+int carregarJogo(char nomeJogador[21], int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *ini1PosY, int *ini2, int *ini2PosX, int *ini2PosY)
+{
+    FILE *arq1;
+    char nomeArquivo[25], key;
+    str_save saveFile;
+    int ret = 1;
+
+    clrscr();
+    gotoxy(35,7);
+    printf("Digite o nome do arquivo que deseja carregar: ");
+    gotoxy(50,8);
+    gets(nomeArquivo);
+
+    arq1 = fopen(nomeArquivo, "rb");
+    if(arq1 == NULL)
+    {
+        ret = 0;
+    }
+    else
+    {
+        fread(&saveFile, sizeof(str_save), 1, arq1);
+        strcpy(nomeJogador, saveFile.nome);
+        *vidas = saveFile.vidas;
+        *pontos = saveFile.pontos;
+        *nivel = saveFile.nivel;
+        *ini1 = saveFile.ini1;
+        *ini1PosX = saveFile.ini1PosX;
+        *ini1PosY = saveFile.ini1PosY;
+        *ini2 = saveFile.ini2;
+        *ini2PosX = saveFile.ini2PosX;
+        *ini2PosY = saveFile.ini2PosY;
+    }
+
+    clrscr();
+    fclose(arq1);
+    return ret;
 }

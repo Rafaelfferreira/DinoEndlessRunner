@@ -1,11 +1,10 @@
 WHATSHAPPENING,3395
+rafael,226
+rafael,181
 BIGSHAQ,157
+rafael,126
+teste,124
+teste,107
 testereal,87
+teste,66
 teste,65
-teste2,61
-fhau,57
-teste,38
-dsadas,37
-testando,37
-what,20
-AAAAAAAA,10
