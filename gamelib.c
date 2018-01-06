@@ -8,25 +8,25 @@
 #define TLINHA 30 //tamanho maximo de uma linha de arquivo
 
 //funcao a ser chamada quando sai do pause, inicia um jogo novo ou carrega outro jogo
-void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21], int loadGame)
+void rodaJogo(int *dinoPosY, int *pronto,int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida, char nomeJogador[21], int loadGame, int *nSaves)
 {
     srand(time(NULL)); //inicializando a seed do rand
     char key;
     int FLPulando, tempoPulo = 0; //flag se o player esta pulando e var que determina quantos ciclos dura o pulo
     int ini1PosX = 90, ini1PosY = 0, inimigo = 0, ini2PosX = 90, ini2PosY = 0, ini1 = 0, ini2 = 0, levouDano = 0; //variaveis do inimigo, mudar iniposX para 100 e arrumar as bordas (mais pra frente no projeto)
     int countNivel = 0; //conta ate 100 e 500 respectivamente e incrementa a devida variavel
-    int nSaves = 0, carregou = 0;
+    int carregou = 0;
 
     if(loadGame == 1) //se esta carregando um save ao inves de começar um jogo novo
     {
-        carregou = carregarJogo(nomeJogador, vidas, pontos, nivel, &ini1, &ini1PosX, &ini1PosY, &ini2, &ini2PosX, &ini2PosY);
+        carregou = carregarJogo(nomeJogador, vidas, pontos, nivel, &ini1, &ini1PosX, &ini1PosY, &ini2, &ini2PosX, &ini2PosY, nSaves);
         if(carregou == 0)
         {
             clrscr();
             printf("falha ao carregar o save");
             printf("\npressione ENTER para voltar ao menu");
             scanf(stdin);
-            menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
+            menuInicial(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
         }
         else
         {
@@ -52,8 +52,8 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
     *countVida = 0;
 
     while(*gameOver == 0 && *pausado == 0)
-    {
-        interacao(&key, dinoPosY, pronto, pausado, velJogo, abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida, nomeJogador, &nSaves);
+        {
+        interacao(&key, dinoPosY, pronto, pausado,  abaixado, &FLPulando, &tempoPulo,vidas, pontos, nivel, &ini1, &ini2, &ini1PosX, &ini1PosY, &ini2PosX, &ini2PosY, countVida, nomeJogador, nSaves);
 
         //Se o jogador estiver pulando, carrega um frame novo do pulo a cada ciclo
         if(FLPulando == 1)
@@ -88,7 +88,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
 
         if(levouDano == 1) //confere se o inimigo 1 deu dano
         {
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador);
+            perdeuVida(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador, nSaves);
             break; //sai do while caso gameOver vire 1 aqui;
         }
 
@@ -174,7 +174,7 @@ void rodaJogo(int *dinoPosY, int *pronto, int *velJogo, int *abaixado, int *vida
         }
 
         if(levouDano == 1) //confere se o inimigo 2 deu dano
-            perdeuVida(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador);
+            perdeuVida(dinoPosY, pronto, abaixado, vidas, pontos, nivel, gameOver, pausado, &levouDano, countVida, nomeJogador, nSaves);
 
         //imprime os pontos atuais na tela, fazer com que talvez demore mais para ganhar cada ponto, pois os ciclos estao mto rapidos
         *pontos = *pontos + 1;
@@ -237,7 +237,7 @@ void imprimeCenario(int *dinoPosY, int *vidas, int *pontos, int *nivel)
 
 //funcao que avalia que tipo de movimento é e chama a funçao adequada para executalo
 //aqui passamos as variaveis dinoPosY e velJogo como um endereço pois as funçoes que executam os movimentos precisam usa-la como um ponteiro
-void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
+void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int *abaixado, int *FLPulando, int *tempoPulo, int *vidas, int *pontos, int *nivel, int *ini1, int *ini2, int *ini1PosX, int *ini1PosY, int *ini2PosX, int *ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
 { //flag se o dinossauro esta pulando
     if(*pronto == 1 && kbhit()) //Determina se o usuario pressionou uma tecla sem ter que parar o programa
     {
@@ -253,7 +253,7 @@ void interacao(char *k, int dinoPosY, int *pronto, int *pausado, int velJogo, in
             abaixando(dinoPosY, abaixado);
         }
         else if(*k == 'p')
-            menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
+            menuPause(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
     }
     //Esse if executa se o jogador nao estiver pressionando a tecla 'c' e se o dinossauro estiver abaixado
     //0x43 e 0x28 sao os KeyCodes das teclas C e da seta para baixo
@@ -587,7 +587,7 @@ int testaDano(int dinoPosY,int nIni, int iniPosY, int iniPosX, int abaixado, int
 
 }
 
-void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
+void perdeuVida(int *dinoPosY,int *pronto, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21], int *nSaves)
 {
     Sleep(250); //tempo para o jogador ver que ele morreu
     clrscr();
@@ -595,23 +595,22 @@ void perdeuVida(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vid
 
     if(*vidas == 0)
     {
-        morreu(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador);
+        morreu(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador);
     }
     else
     {
-        recomeca(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador);
+        recomeca(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, levouDano, countVida, nomeJogador, nSaves);
     }
 }
 
 //recomeca eh a funcao que exibe a tela de morte do jogo
-void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
+void recomeca(int *dinoPosY,int *pronto, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21], int *nSaves)
 {
     int existeSave = 0; //flag que serve para mostrar que nao esta carregando um jogo salvo
 
     *dinoPosY = 14;
     *pronto = 1;
     *nivel = 1;
-    *velJogo = *nivel * 250;
     *abaixado = 0;
     *gameOver = 0;
     *pausado = 0;
@@ -644,11 +643,11 @@ void recomeca(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas
             getch();
 
     imprimeCenario(dinoPosY, vidas, pontos, nivel);
-    rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
+    rodaJogo(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave, nSaves);
 
 }
 
-void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
+void morreu(int *dinoPosY,int *pronto, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *levouDano, int *countVida, char nomeJogador[21])
 {
     char opcao;
 
@@ -674,13 +673,13 @@ void morreu(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, 
     if(opcao == '2')
         exit(0); //termina a aplicação
     else if(opcao == '1')
-        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+        menuInicial(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
 
 }
 
-void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
+void menuInicial(int *dinoPosY,int *pronto, int *abaixado, int *vidas, int *pontos, int *nivel, int *gameOver, int *pausado, int *countVida)
 {
-    int saiuDoJogo = 0, existeSave = 0;
+    int saiuDoJogo = 0, existeSave = 0, nSaves = 0;
     clrscr();
     fflush(stdin);
 
@@ -689,7 +688,6 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
     *pronto = 1;
     *nivel = 1;
     *vidas = 3;
-    *velJogo = *nivel * 250;
     *abaixado = 0;
     *gameOver = 0;
     *pausado = 0;
@@ -723,17 +721,17 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
                 gets(nomeJogador);
 
                 clrscr();
-                rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
+                rodaJogo(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave, &nSaves);
             }
             else if(opcao == 't')
             {
                 ranking(&opcao);
-                menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
+                menuInicial(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, countVida);
             }
             else if(opcao == 'c')
             {
                 existeSave = 1;
-                rodaJogo(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave);
+                rodaJogo(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, gameOver, pausado, countVida, nomeJogador, existeSave, &nSaves);
             }
             else if(opcao == 'r')
             {
@@ -743,7 +741,7 @@ void menuInicial(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vi
         }
 }
 
-void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
+void menuPause(int *dinoPosY,int *pronto, int *abaixado, int *vidas, int *pontos, int *nivel, int *pausado, int ini1, int ini2, int ini1PosX, int ini1PosY, int ini2PosX, int ini2PosY, int *countVida, char nomeJogador[21], int *nSaves)
 {
     clrscr();
     char opcao;
@@ -767,12 +765,12 @@ void menuPause(int *dinoPosY,int *pronto, int *velJogo, int *abaixado, int *vida
     {
         int gameOver = 0;
         scores(nomeJogador, *pontos);
-        menuInicial(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
+        menuInicial(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, &gameOver, pausado, countVida);
     }
     else if(opcao == 's')
     {
         salvarJogo(vidas, pontos, nivel, ini1, ini1PosX, ini1PosY, ini2, ini2PosX, ini2PosY, nomeJogador, nSaves);
-        menuPause(dinoPosY, pronto, velJogo, abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
+        menuPause(dinoPosY, pronto,  abaixado, vidas, pontos, nivel, pausado, ini1, ini2, ini1PosX, ini1PosY, ini2PosX, ini2PosY, countVida, nomeJogador, nSaves);
     }
 
 }
@@ -965,6 +963,7 @@ salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *i
     arquivoSave.ini2 = *ini2;
     arquivoSave.ini2PosX = *ini2PosX;
     arquivoSave.ini2PosY = *ini2PosY;
+    arquivoSave.nSave = *nSaves;
 
 
     arq1 = fopen(nomeArquivo,"wb");
@@ -983,7 +982,7 @@ salvarJogo(int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *i
     Sleep(600);
 }
 
-int carregarJogo(char nomeJogador[21], int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *ini1PosY, int *ini2, int *ini2PosX, int *ini2PosY)
+int carregarJogo(char nomeJogador[21], int *vidas, int *pontos, int *nivel, int *ini1, int *ini1PosX, int *ini1PosY, int *ini2, int *ini2PosX, int *ini2PosY, int *nSaves)
 {
     FILE *arq1;
     char nomeArquivo[25], key;
@@ -1014,6 +1013,7 @@ int carregarJogo(char nomeJogador[21], int *vidas, int *pontos, int *nivel, int 
         *ini2 = saveFile.ini2;
         *ini2PosX = saveFile.ini2PosX;
         *ini2PosY = saveFile.ini2PosY;
+        *nSaves = saveFile.nSave;
     }
 
     clrscr();

@@ -31,3 +31,17 @@ rafael,126
 rafael,181
 rafael,226
 teste,107
+teste,689
+teste,1313
+camila,740
+teste,760
+rafael,109
+olar,388
+olar,393
+olar,307
+olar,181
+olar,331
+olar,257
+xdzim,507
+teste,481
+teste,657
